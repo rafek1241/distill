@@ -25,6 +25,9 @@ Examples:
 - `bun test 2>&1 | distill "did the tests pass?"`
 - `git diff 2>&1 | distill "what changed?"`
 - `terraform plan 2>&1 | distill "is this safe?"`
+- `npm audit 2>&1 | distill "extract vulnerabilities as JSON"`
+
+ALWAYS WAIT FOR A RESPONSE FROM `distill` (timeout 5min) before try the same command again.
 
 THERE ARE ONLY TWO SCENARIOS WHEN YOU ARE ALLOWED TO NOT USE `distill`:
 - Do not use `distill` if exact uncompressed output is required.
