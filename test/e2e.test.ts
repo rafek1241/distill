@@ -11,6 +11,7 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { spawn, spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { getCurrentPlatformKey, getPlatformTarget } from "../scripts/platform-targets";
 
 setDefaultTimeout(process.platform === "win32" ? 120_000 : 60_000);
 
@@ -27,19 +28,10 @@ const isolatedConfigPath = path.join(
   `distill-e2e-default-config-${process.pid}.json`
 );
 const currentPlatformPackage = (() => {
-  const key = `${process.platform}-${process.arch}`;
-  const mapping: Record<string, string> = {
-    "darwin-arm64": "@samuelfaj/distill-darwin-arm64",
-    "darwin-x64": "@samuelfaj/distill-darwin-x64",
-    "linux-arm64": "@samuelfaj/distill-linux-arm64",
-    "linux-x64": "@samuelfaj/distill-linux-x64",
-    "win32-x64": "@samuelfaj/distill-win32-x64"
-  };
-
-  const value = mapping[key];
+  const value = getPlatformTarget(getCurrentPlatformKey())?.packageName;
 
   if (!value) {
-    throw new Error(`Unsupported platform for e2e tests: ${key}`);
+    throw new Error(`Unsupported platform for e2e tests: ${getCurrentPlatformKey()}`);
   }
 
   return value;

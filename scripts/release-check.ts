@@ -1,28 +1,22 @@
 import { access, readFile } from "node:fs/promises";
 import path from "node:path";
+import {
+  getCurrentPlatformKey,
+  getPlatformTarget,
+  PLATFORM_TARGETS
+} from "./platform-targets";
 
 const root = path.resolve(import.meta.dir, "..");
 const requirePublishMetadata = Bun.argv.includes("--publish");
-const currentPlatformKey = `${process.platform}-${process.arch}`;
+const currentPlatformKey = getCurrentPlatformKey();
 const workspacePackages = [
   "packages/cli/package.json",
-  "packages/distill-darwin-arm64/package.json",
-  "packages/distill-darwin-x64/package.json",
-  "packages/distill-linux-arm64/package.json",
-  "packages/distill-linux-x64/package.json",
-  "packages/distill-win32-x64/package.json"
+  ...PLATFORM_TARGETS.map((target) => target.packageManifestPath)
 ];
 
-const binariesByPlatform: Record<string, string> = {
-  "darwin-arm64": "packages/distill-darwin-arm64/bin/distill",
-  "darwin-x64": "packages/distill-darwin-x64/bin/distill",
-  "linux-arm64": "packages/distill-linux-arm64/bin/distill",
-  "linux-x64": "packages/distill-linux-x64/bin/distill",
-  "win32-x64": "packages/distill-win32-x64/bin/distill.exe"
-};
 const binaries = requirePublishMetadata
-  ? Object.values(binariesByPlatform)
-  : [binariesByPlatform[currentPlatformKey]].filter(Boolean);
+  ? PLATFORM_TARGETS.map((target) => target.packageBinaryPath)
+  : [getPlatformTarget(currentPlatformKey)?.packageBinaryPath].filter(Boolean);
 
 const manifests = await Promise.all(
   workspacePackages.map(async (relativePath) => {

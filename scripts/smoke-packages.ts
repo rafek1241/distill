@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import cliPackage from "../packages/cli/package.json";
+import { getCurrentPlatformKey, getPlatformTarget } from "./platform-targets";
 
 const root = path.resolve(import.meta.dir, "..");
 const packDir = await mkdtemp(path.join(tmpdir(), "distill-pack-"));
@@ -11,19 +12,10 @@ const installDir = await mkdtemp(path.join(tmpdir(), "distill-install-"));
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 
 const currentPlatformPackage = (() => {
-  const key = `${process.platform}-${process.arch}`;
-  const mapping: Record<string, string> = {
-    "darwin-arm64": "@samuelfaj/distill-darwin-arm64",
-    "darwin-x64": "@samuelfaj/distill-darwin-x64",
-    "linux-arm64": "@samuelfaj/distill-linux-arm64",
-    "linux-x64": "@samuelfaj/distill-linux-x64",
-    "win32-x64": "@samuelfaj/distill-win32-x64"
-  };
-
-  const value = mapping[key];
+  const value = getPlatformTarget(getCurrentPlatformKey())?.packageName;
 
   if (!value) {
-    throw new Error(`Unsupported smoke-pack target: ${key}`);
+    throw new Error(`Unsupported smoke-pack target: ${getCurrentPlatformKey()}`);
   }
 
   return value;

@@ -44,6 +44,7 @@ describe("user config", () => {
   it("resolves config path from explicit path, xdg, and Windows env vars", () => {
     const appData = "C:\\Users\\me\\AppData\\Roaming";
     const localAppData = "C:\\Users\\me\\AppData\\Local";
+    const userProfile = "C:\\Users\\me";
 
     expect(
       resolveConfigPath({
@@ -75,5 +76,13 @@ describe("user config", () => {
         LOCALAPPDATA: localAppData
       })
     ).toBe(path.join(localAppData, "distill", "config.json"));
+
+    expect(
+      resolveConfigPath({
+        USERPROFILE: userProfile
+      })
+    ).toBe(
+      path.join(userProfile, "AppData", "Roaming", "distill", "config.json")
+    );
   });
 });
