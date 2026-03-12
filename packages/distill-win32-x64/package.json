@@ -1,9 +1,9 @@
 {
-  "name": "@samuelfaj/distill-darwin-arm64",
+  "name": "@samuelfaj/distill-win32-x64",
   "version": "1.4.1",
   "license": "MIT",
   "files": [
-    "bin/distill"
+    "bin/distill.exe"
   ],
   "publishConfig": {
     "access": "public"
